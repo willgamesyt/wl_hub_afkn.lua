@@ -1,0 +1,303 @@
+-- Proteções básicas
+if not game:IsLoaded() then game.Loaded:Wait() end
+pcall(function() setfpscap(60) end)
+
+-- Efeito de carregamento
+local function showLoading()
+    local loadingGui = Instance.new("ScreenGui")
+    loadingGui.Name = "LoadingGui"
+    loadingGui.ResetOnSpawn = false
+    loadingGui.IgnoreGuiInset = true
+    loadingGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    loadingGui.Parent = game:GetService("CoreGui")
+
+    local bg = Instance.new("ImageLabel")
+    bg.Size = UDim2.new(1, 0, 1, 0)
+    bg.Position = UDim2.new(0, 0, 0, 0)
+    bg.Image = "rbxassetid://14384894792" -- espada roxa
+    bg.ImageTransparency = 0.2
+    bg.BackgroundTransparency = 1
+    bg.Parent = loadingGui
+
+    local text = Instance.new("TextLabel")
+    text.Size = UDim2.new(1, 0, 0, 100)
+    text.Position = UDim2.new(0, 0, 0.5, -50)
+    text.BackgroundTransparency = 1
+    text.Text = "🔥 Carregando WL AFK Hub 🔥"
+    text.TextColor3 = Color3.fromRGB(180, 0, 255)
+    text.TextStrokeTransparency = 0
+    text.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+    text.TextScaled = true
+    text.Font = Enum.Font.FredokaOne
+    text.Parent = loadingGui
+
+    for i = 1, 10 do
+        text.TextTransparency = 1 - (i * 0.1)
+        task.wait(0.05)
+    end
+
+    wait(2.5)
+    loadingGui:Destroy()
+end
+showLoading()
+
+-- UI Library
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+local Window = OrionLib:MakeWindow({
+    Name = "🌑 WL AFK Hub 🌑",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "WLAfkHub",
+    IntroText = "Solo Leveling Power",
+    IntroIcon = "rbxassetid://14384894792"
+})
+
+-- Funções de configuração
+local function restoreDefaultSettings()
+    OrionLib.Flags["fpsCap"].Value = 60
+    OrionLib.Flags["antiLag"].Value = true
+    OrionLib.Flags["saveConfig"].Value = true
+    OrionLib.Flags["configFolder"].Value = "WLAfkHub"
+end
+
+local function applyGraphicsSettings()
+    if OrionLib.Flags["antiLag"].Value then
+        -- Desativa efeitos gráficos pesados
+        game.Lighting.Bloom.Enabled = false
+        game.Lighting.DepthOfField.Enabled = false
+        game.Lighting.SunRays.Enabled = false
+        game.Lighting.GlobalShadows.Enabled = false
+    else
+        -- Restaura efeitos gráficos
+        game.Lighting.Bloom.Enabled = true
+        game.Lighting.DepthOfField.Enabled = true
+        game.Lighting.SunRays.Enabled = true
+        game.Lighting.GlobalShadows.Enabled = true
+    end
+end
+
+-- Aba de Configurações
+local TabConfig = Window:MakeTab({
+    Name = "Configurações",
+    Icon = "rbxassetid://6035040275",
+    PremiumOnly = false
+})
+
+TabConfig:AddButton({
+    Name = "Restaurar Configurações Padrão",
+    Callback = function()
+        restoreDefaultSettings()
+        applyGraphicsSettings()
+        OrionLib:SaveConfig()
+    end
+})
+
+TabConfig:AddSlider({
+    Name = "Limite de FPS",
+    Min = 30,
+    Max = 120,
+    Default = 60,
+    Save = true,
+    Flag = "fpsCap",
+    Callback = function(value)
+        setfpscap(value)
+    end
+})
+
+TabConfig:AddToggle({
+    Name = "Anti-Lag (Gráficos Otimizados)",
+    Default = true,
+    Save = true,
+    Flag = "antiLag",
+    Callback = function()
+        applyGraphicsSettings()
+    end
+})
+
+TabConfig:AddToggle({
+    Name = "Salvar Configurações",
+    Default = true,
+    Save = true,
+    Flag = "saveConfig",
+    Callback = function()
+        if OrionLib.Flags["saveConfig"].Value then
+            OrionLib:SaveConfig()
+        end
+    end
+})
+
+TabConfig:AddTextbox({
+    Name = "Pasta de Configuração",
+    Default = "WLAfkHub",
+    Save = true,
+    Flag = "configFolder",
+    Callback = function(value)
+        OrionLib.ConfigFolder = value
+    end
+})
+
+-- Aba AFK
+local TabAFK = Window:MakeTab({
+    Name = "AFK / AutoClick",
+    Icon = "rbxassetid://6034987532",
+    PremiumOnly = false
+})
+
+local clickMode = "Normal"
+TabAFK:AddDropdown({
+    Name = "Modo de AutoClick",
+    Default = "Normal",
+    Options = {"Normal", "Intermediário", "Potente"},
+    Callback = function(v)
+        clickMode = v
+    end
+})
+
+TabAFK:AddButton({
+    Name = "Ativar AutoClick",
+    Callback = function()
+        local delayTime = (clickMode == "Normal" and 1) or (clickMode == "Intermediário" and 0.2) or 0.05
+        while true do
+            task.wait(delayTime)
+            mouse1click()
+        end
+    end
+})
+
+TabAFK:AddButton({
+    Name = "Dar ARISE nas sombras",
+    Callback = function()
+        -- Código de ARISE
+    end
+})
+
+TabAFK:AddButton({
+    Name = "Destruir sombras",
+    Callback = function()
+        -- Código de destruir sombras
+    end
+})
+
+-- Aba Farm de Money
+local TabFarm = Window:MakeTab({
+    Name = "Farm Money",
+    Icon = "rbxassetid://6035067836",
+    PremiumOnly = false
+})
+
+local selectedIsland = "Ilha 1"
+TabFarm:AddDropdown({
+    Name = "Selecionar Ilha",
+    Default = "Ilha 1",
+    Options = {"Ilha 1", "Ilha 2", "Ilha 3", "Ilha 4", "Ilha 5", "Ilha 6"},
+    Callback = function(v)
+        selectedIsland = v
+    end
+})
+
+TabFarm:AddToggle({
+    Name = "Farmar NPCs da ilha",
+    Default = false,
+    Callback = function(v)
+        while v do
+            -- Detecção da Ilha do Gelo (exemplo)
+            if game:GetService("Workspace"):FindFirstChild("GeloRaid") then break end
+            -- Código para atacar NPCs grandes e pequenos da selectedIsland
+            task.wait(0.2)
+        end
+    end
+})
+
+-- Aba Raid do Gelo
+local TabGelo = Window:MakeTab({
+    Name = "Raid do Gelo",
+    Icon = "rbxassetid://6031075938",
+    PremiumOnly = false
+})
+
+TabGelo:AddToggle({
+    Name = "Ativar Raid do Gelo",
+    Default = true,
+    Callback = function(v)
+        while v do
+            -- Código para teleportar e matar os NPCs da Raid do Gelo
+            task.wait(0.2)
+        end
+    end
+})
+
+-- Aba Raids
+local TabRaids = Window:MakeTab({
+    Name = "Raids",
+    Icon = "rbxassetid://6035193183",
+    PremiumOnly = false
+})
+
+local ranks = {"E", "D", "C", "B", "A", "S"}
+local selectedRank = "C"
+TabRaids:AddDropdown({
+    Name = "Selecionar Rank da Raid",
+    Default = "C",
+    Options = ranks,
+    Callback = function(v)
+        selectedRank = v
+    end
+})
+
+TabRaids:AddToggle({
+    Name = "Fazer Raids automaticamente",
+    Default = false,
+    Callback = function(v)
+        while v do
+            -- Teleporta para os NPCs e ativa kill aura
+            task.wait(0.2)
+        end
+    end
+})
+
+-- Aba Vender / Trocar
+local TabTrocar = Window:MakeTab({
+    Name = "Vender / Trocar",
+    Icon = "rbxassetid://6031154879",
+    PremiumOnly = false
+})
+
+TabTrocar:AddDropdown({
+    Name = "Selecionar Rank para vender",
+    Default = "C",
+    Options = ranks,
+    Callback = function(v)
+        selectedRank = v
+    end
+})
+
+TabTrocar:AddButton({
+    Name = "Vender Sombras",
+    Callback = function()
+        -- Código para vender sombras do rank selecionado
+    end
+})
+
+TabTrocar:AddButton({
+    Name = "Trocar Pós Comuns",
+    Callback = function()
+        -- Código para trocar pós comuns
+    end
+})
+
+TabTrocar:AddButton({
+    Name = "Trocar Pós Raros",
+    Callback = function()
+        -- Código para trocar pós raros
+    end
+})
+
+TabTrocar:AddButton({
+    Name = "Trocar Pós Lendários",
+    Callback = function()
+        -- Código para trocar pós lendários
+    end
+})
+
+-- Inicializar a interface OrionLib
+OrionLib:Init()
